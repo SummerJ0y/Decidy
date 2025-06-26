@@ -52,18 +52,40 @@ class HomePage extends StatelessWidget {
             print('🛑 停止录音，准备跳转');
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => ResultPage()),
+              PageRouteBuilder(
+                transitionDuration: Duration(milliseconds: 400), // 更缓一些
+                pageBuilder: (_, __, ___) => ResultPage(),
+                transitionsBuilder: (_, animation, __, child) {
+                  return FadeTransition(
+                    opacity: CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeOutCubic, // 更自然的“空气中浮现”感
+                    ),
+                    child: child,
+                  );
+                },
+              ),
             );
           },
           child: Container(
-            width: 120,
-            height: 120,
+            width: 200,
+            height: 200,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
+              gradient: LinearGradient(
+                colors: [Colors.deepPurple, Colors.purpleAccent],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 12,
+                  offset: Offset(0, 4),
+                ),
+              ],
             ),
-            alignment: Alignment.center,
-            child: Icon(Icons.mic, color: Colors.white, size: 40),
+            child: Icon(Icons.mic, size: 40, color: Colors.white),
           ),
         ),
       ),
