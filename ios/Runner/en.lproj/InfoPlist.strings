@@ -1,0 +1,2 @@
+"NSMicrophoneUsageDescription" = "We need access to your microphone for voice input.";
+"NSSpeechRecognitionUsageDescription" = "We use speech recognition to help you make decisions.";

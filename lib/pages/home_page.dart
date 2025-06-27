@@ -9,7 +9,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   bool _isPressed = false;
   late AnimationController _glowController;
 
@@ -38,24 +39,30 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   void _onPressEnd() {
     setState(() => _isPressed = false);
     _glowController.stop();
-    print('🛑 停止录音，准备跳转');
+    print('🛑 停止录音');
+    context.read<DecidyState>().setSpokenText('模拟语音识别文本'); // 临时占位
 
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        transitionDuration: Duration(milliseconds: 400),
-        pageBuilder: (_, __, ___) => ResultPage(),
-        transitionsBuilder: (_, animation, __, child) {
-          return FadeTransition(
-            opacity: CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOutCubic,
-            ),
-            child: child,
-          );
-        },
-      ),
-    );
+    Future.delayed(Duration(milliseconds: 500), () {
+      context.read<DecidyState>().decisionResult =
+          '当然要！我听懂你说了：${context.read<DecidyState>().spokenText}';
+
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          transitionDuration: Duration(milliseconds: 400),
+          pageBuilder: (_, __, ___) => ResultPage(),
+          transitionsBuilder: (_, animation, __, child) {
+            return FadeTransition(
+              opacity: CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutCubic,
+              ),
+              child: child,
+            );
+          },
+        ),
+      );
+    });
   }
 
   @override
@@ -83,8 +90,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     AnimatedBuilder(
                       animation: _glowController,
                       builder: (_, __) {
-                        final glow = Tween(begin: 0.0, end: 60.0).animate(_glowController);
-                        final opacity = Tween(begin: 0.5, end: 0.0).animate(_glowController);
+                        final glow = Tween(
+                          begin: 0.0,
+                          end: 60.0,
+                        ).animate(_glowController);
+                        final opacity = Tween(
+                          begin: 0.5,
+                          end: 0.0,
+                        ).animate(_glowController);
                         return Container(
                           width: 200 + glow.value,
                           height: 200 + glow.value,
