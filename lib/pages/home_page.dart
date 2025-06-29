@@ -34,13 +34,18 @@ class _HomePageState extends State<HomePage>
     _glowController.repeat(reverse: true);
     HapticFeedback.mediumImpact();
     print('🎤 开始录音');
+    context.read<DecidyState>().startRecording();
   }
 
-  void _onPressEnd() {
+  void _onPressEnd() async {
     setState(() => _isPressed = false);
     _glowController.stop();
     print('🛑 停止录音');
-    context.read<DecidyState>().setSpokenText('模拟语音识别文本'); // 临时占位
+    final appState = context.read<DecidyState>();
+    await appState.stopRecording();
+    await appState.playRecording();
+
+    appState.setSpokenText('模拟语音识别文本');
 
     Future.delayed(Duration(milliseconds: 500), () {
       context.read<DecidyState>().decisionResult =
