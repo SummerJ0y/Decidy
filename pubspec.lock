@@ -179,6 +179,7 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -208,6 +209,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.7"
+
   leak_tracker:
     dependency: transitive
     description:
@@ -525,6 +527,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+
   xdg_directories:
     dependency: transitive
     description:
