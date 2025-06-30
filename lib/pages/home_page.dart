@@ -40,10 +40,11 @@ class _HomePageState extends State<HomePage>
   void _onPressEnd() async {
     setState(() => _isPressed = false);
     _glowController.stop();
-    print('🛑 停止录音');
+    
     final appState = context.read<DecidyState>();
     await appState.stopRecording();
     await appState.playRecording();
+    print('🛑 停止录音');    
 
     appState.setSpokenText('模拟语音识别文本');
 
