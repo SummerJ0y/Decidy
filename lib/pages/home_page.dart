@@ -10,7 +10,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   bool _isPressed = false;
   bool _showTextField = false;
   late AnimationController _glowController;
@@ -42,29 +43,41 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     _glowController.repeat(reverse: true);
     HapticFeedback.lightImpact(); // subtle haptic feedback
     print('🎤 开始录音');
+    context.read<DecidyState>().startRecording();
   }
 
-  void _onPressEnd() {
+  void _onPressEnd() async {
     setState(() => _isPressed = false);
     _glowController.stop();
-    print('🛑 停止录音，准备跳转');
+    
+    final appState = context.read<DecidyState>();
+    await appState.stopRecording();
+    await appState.playRecording();
+    print('🛑 停止录音');    
 
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        transitionDuration: Duration(milliseconds: 400),
-        pageBuilder: (_, __, ___) => ResultPage(),
-        transitionsBuilder: (_, animation, __, child) {
-          return FadeTransition(
-            opacity: CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOutCubic,
-            ),
-            child: child,
-          );
-        },
-      ),
-    );
+    appState.setSpokenText('模拟语音识别文本');
+
+    Future.delayed(Duration(milliseconds: 500), () {
+      context.read<DecidyState>().decisionResult =
+          '当然要！我听懂你说了：${context.read<DecidyState>().spokenText}';
+
+      Navigator.push(
+        context,
+        PageRouteBuilder(
+          transitionDuration: Duration(milliseconds: 400),
+          pageBuilder: (_, __, ___) => ResultPage(),
+          transitionsBuilder: (_, animation, __, child) {
+            return FadeTransition(
+              opacity: CurvedAnimation(
+                parent: animation,
+                curve: Curves.easeOutCubic,
+              ),
+              child: child,
+            );
+          },
+        ),
+      );
+    });
   }
 
   Widget _buildMicButton() {

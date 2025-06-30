@@ -1,0 +1,2 @@
+"NSMicrophoneUsageDescription" = "我们需要访问麦克风以识别你的语音。";
+"NSSpeechRecognitionUsageDescription" = "我们需要语音识别来帮你做决定。";
