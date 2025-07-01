@@ -4,6 +4,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:record/record.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class DecidyState extends ChangeNotifier {
   String spokenText = '我要不要吃炸鸡';
@@ -59,7 +60,8 @@ class DecidyState extends ChangeNotifier {
     });
 
     final dio = Dio();
-    dio.options.headers['Authorization'] = 'Bearer <你的OpenAI API Key>';
+    dio.options.headers['Authorization'] =
+        'Bearer ${dotenv.env['OPENAI_API_KEY']}';
 
     try {
       final response = await dio.post(

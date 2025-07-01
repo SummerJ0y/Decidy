@@ -62,29 +62,31 @@ class _HomePageState extends State<HomePage>
     await appState.playRecording();
     print('🛑 停止录音');
 
-    appState.setSpokenText('模拟语音识别文本');
+    await appState.transcribeRecording();
+    final transcribedText = appState.spokenText;
+    print('📝 Whisper 返回内容：$transcribedText');
 
-    Future.delayed(Duration(milliseconds: 500), () {
-      context.read<DecidyState>().decisionResult =
-          '当然要！我听懂你说了：${context.read<DecidyState>().spokenText}';
+    final decision = await ai.getDecision(transcribedText);
+    appState.decisionResult = decision;
 
-      Navigator.push(
-        context,
-        PageRouteBuilder(
-          transitionDuration: Duration(milliseconds: 400),
-          pageBuilder: (_, __, ___) => ResultPage(),
-          transitionsBuilder: (_, animation, __, child) {
-            return FadeTransition(
-              opacity: CurvedAnimation(
-                parent: animation,
-                curve: Curves.easeOutCubic,
-              ),
-              child: child,
-            );
-          },
-        ),
-      );
-    });
+    // appState.setSpokenText('模拟语音识别文本');
+
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        transitionDuration: Duration(milliseconds: 400),
+        pageBuilder: (_, __, ___) => ResultPage(),
+        transitionsBuilder: (_, animation, __, child) {
+          return FadeTransition(
+            opacity: CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeOutCubic,
+            ),
+            child: child,
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildMicButton() {
