@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../app_state.dart';
 import 'result_page.dart';
 import '../ai_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -16,11 +17,7 @@ class _HomePageState extends State<HomePage>
   bool _showTextField = false;
   late AnimationController _glowController;
   final TextEditingController _textController = TextEditingController();
-
-  final AIService ai = AIService(
-    endpoint: 'https://api.openai.com/v1/chat/completions', // or your own proxy
-    apiKey: 'test key', // store securely in real apps!
-  );
+  late final AIService ai;
 
   @override
   void initState() {
@@ -28,6 +25,16 @@ class _HomePageState extends State<HomePage>
     _glowController = AnimationController(
       vsync: this,
       duration: Duration(seconds: 1),
+    );
+
+    final key = dotenv.env['OPENAI_API_KEY'];
+    if (key == null || key.isEmpty) {
+      throw Exception("❗️OPENAI_API_KEY not found in .env");
+    }
+
+    ai = AIService(
+      endpoint: 'https://api.openai.com/v1/chat/completions',
+      apiKey: key,
     );
   }
 
@@ -49,11 +56,11 @@ class _HomePageState extends State<HomePage>
   void _onPressEnd() async {
     setState(() => _isPressed = false);
     _glowController.stop();
-    
+
     final appState = context.read<DecidyState>();
     await appState.stopRecording();
     await appState.playRecording();
-    print('🛑 停止录音');    
+    print('🛑 停止录音');
 
     appState.setSpokenText('模拟语音识别文本');
 
@@ -101,8 +108,14 @@ class _HomePageState extends State<HomePage>
                 AnimatedBuilder(
                   animation: _glowController,
                   builder: (_, __) {
-                    final glow = Tween(begin: 0.0, end: 60.0).animate(_glowController);
-                    final opacity = Tween(begin: 0.5, end: 0.0).animate(_glowController);
+                    final glow = Tween(
+                      begin: 0.0,
+                      end: 60.0,
+                    ).animate(_glowController);
+                    final opacity = Tween(
+                      begin: 0.5,
+                      end: 0.0,
+                    ).animate(_glowController);
                     return Container(
                       width: 200 + glow.value,
                       height: 200 + glow.value,
@@ -150,6 +163,7 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<DecidyState>();
+    print('🖼️ HomePage build');
 
     return Scaffold(
       body: Stack(
@@ -193,7 +207,9 @@ class _HomePageState extends State<HomePage>
                                   appState.decisionResult = '这是你手动输入的：$value';
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (_) => ResultPage()),
+                                    MaterialPageRoute(
+                                      builder: (_) => ResultPage(),
+                                    ),
                                   );
                                 },
                               ),
@@ -204,13 +220,17 @@ class _HomePageState extends State<HomePage>
                                   if (value.isNotEmpty) {
                                     appState.spokenText = value;
 
-                                    final response = await ai.getDecision(value);
+                                    final response = await ai.getDecision(
+                                      value,
+                                    );
 
                                     appState.decisionResult = response;
 
                                     Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (_) => ResultPage()),
+                                      MaterialPageRoute(
+                                        builder: (_) => ResultPage(),
+                                      ),
                                     );
                                   }
                                 },
