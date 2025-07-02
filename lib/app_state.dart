@@ -5,6 +5,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:record/record.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import './whisper_service.dart';
 
 class DecidyState extends ChangeNotifier {
   String spokenText = '我要不要吃炸鸡';
@@ -40,39 +41,20 @@ class DecidyState extends ChangeNotifier {
     try {
       await _audioPlayer.play(DeviceFileSource(_recordedFilePath!));
     } catch (e) {
-      debugPrint('播放失败: $e');
+      debugPrint('fail to play the audio: $e');
     }
   }
 
   Future<void> transcribeRecording() async {
     if (_recordedFilePath == null) {
-      spokenText = '未找到录音文件';
+      spokenText = 'fail to find the audio file when transcribe';
       notifyListeners();
       return;
     }
 
     final file = File(_recordedFilePath!);
-
-    final formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(file.path, filename: 'audio.m4a'),
-      'model': 'whisper-1',
-      'language': 'zh',
-    });
-
-    final dio = Dio();
-    dio.options.headers['Authorization'] =
-        'Bearer ${dotenv.env['OPENAI_API_KEY']}';
-
-    try {
-      final response = await dio.post(
-        'https://api.openai.com/v1/audio/transcriptions',
-        data: formData,
-      );
-
-      spokenText = response.data['text'] ?? '识别失败';
-    } catch (e) {
-      spokenText = '上传或识别失败：$e';
-    }
+    final whisper = WhisperService();
+    spokenText = await whisper.transcribe(file);
 
     notifyListeners();
   }
