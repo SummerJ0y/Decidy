@@ -18,19 +18,20 @@ class AIService {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        "model": "gpt-4o", // or "gpt-4o-mini" if that's the correct model name
+        "model": "gpt-4o", // or "gpt-4o-mini"
         "messages": [
           {"role": "system", "content": "你是一个果断、风趣的决策助手。"},
-          {"role": "user", "content": userInput}
+          {"role": "user", "content": userInput},
         ],
       }),
     );
 
     if (response.statusCode == 200) {
       final decoded = jsonDecode(response.body);
-      return decoded['choices'][0]['message']['content']?.trim() ?? '我不知道该怎么回答 😅';
+      return decoded['choices'][0]['message']['content']?.trim() ??
+          'I don\'t know how to answer 😅';
     } else {
-      throw Exception('请求 GPT 接口失败: ${response.statusCode}');
+      throw Exception('fail to request GPT API: ${response.statusCode}');
     }
   }
 }

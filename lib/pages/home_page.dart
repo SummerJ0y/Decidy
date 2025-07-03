@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../app_state.dart';
 import 'result_page.dart';
-import '../ai_service.dart';
+import '../services/ai_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class HomePage extends StatefulWidget {
@@ -68,8 +68,6 @@ class _HomePageState extends State<HomePage>
 
     final decision = await ai.getDecision(transcribedText);
     appState.decisionResult = decision;
-
-    // appState.setSpokenText('模拟语音识别文本');
 
     Navigator.push(
       context,
