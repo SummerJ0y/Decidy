@@ -5,6 +5,7 @@ import '../app_state.dart';
 import 'result_page.dart';
 import '../services/ai_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import "../services/random_service.dart";
 
 class HomePage extends StatefulWidget {
   @override
@@ -49,7 +50,7 @@ class _HomePageState extends State<HomePage>
     setState(() => _isPressed = true);
     _glowController.repeat(reverse: true);
     HapticFeedback.lightImpact(); // subtle haptic feedback
-    print('🎤 开始录音');
+    print('🎤 Start Recording');
     context.read<DecidyState>().startRecording();
   }
 
@@ -60,14 +61,24 @@ class _HomePageState extends State<HomePage>
     final appState = context.read<DecidyState>();
     await appState.stopRecording();
     await appState.playRecording();
-    print('🛑 停止录音');
+    print('🛑 Stop Recording');
 
     await appState.transcribeRecording();
     final transcribedText = appState.spokenText;
-    print('📝 Whisper 返回内容：$transcribedText');
+    print('📝 Whisper return：$transcribedText');
 
-    final decision = await ai.getDecision(transcribedText);
-    appState.decisionResult = decision;
+    // final decision = await ai.getDecision(transcribedText);
+    // appState.decisionResult = decision;
+
+    final decisionPairs = await ai.getDecisionPairs(transcribedText);
+
+    if (decisionPairs.isEmpty) {
+      appState.decisionResult =
+          'Oops! That question doesn\'t seem to have clear choices. Try asking something you\'d like help deciding between!';
+    } else {
+      final chosen = RandomService.pickOnePair(decisionPairs);
+      appState.decisionResult = '${chosen[0]} 🟰 ${chosen[1]}';
+    }
 
     Navigator.push(
       context,
@@ -199,12 +210,13 @@ class _HomePageState extends State<HomePage>
                               TextField(
                                 controller: _textController,
                                 decoration: InputDecoration(
-                                  hintText: '输入你的问题...',
+                                  hintText: 'Write down your question...',
                                   border: OutlineInputBorder(),
                                 ),
                                 onSubmitted: (value) {
                                   appState.spokenText = value;
-                                  appState.decisionResult = '这是你手动输入的：$value';
+                                  appState.decisionResult =
+                                      'This is your manual input：$value';
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -234,7 +246,7 @@ class _HomePageState extends State<HomePage>
                                     );
                                   }
                                 },
-                                child: Text('提交'),
+                                child: Text('Upload'),
                               ),
                             ],
                           ),
