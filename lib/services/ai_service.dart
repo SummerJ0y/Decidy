@@ -61,7 +61,7 @@ class AIService {
       final decoded = jsonDecode(response.body);
       final content = decoded['choices'][0]['message']['content'];
 
-      // List<List<String>>
+      // List<List<String>>, check for format
       final list = jsonDecode(content);
       if (list is List &&
           list.every(

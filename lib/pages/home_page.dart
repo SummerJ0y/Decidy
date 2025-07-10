@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage>
           'Oops! That question doesn\'t seem to have clear choices. Try asking something you\'d like help deciding between!';
     } else {
       final chosen = RandomService.pickOnePair(decisionPairs);
-      appState.decisionResult = '${chosen[0]} 🟰 ${chosen[1]}';
+      appState.decisionResult = '${chosen[0]} —— ${chosen[1]}';
     }
 
     Navigator.push(

@@ -2,6 +2,10 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+/// A service for transcribing audio files using OpenAI's Whisper API.
+///
+/// Requires the `OPENAI_API_KEY` to be set in the .env.
+/// Uses the `whisper-1` model to convert speech to text.
 class WhisperService {
   final Dio _dio = Dio()
     ..options.headers['Authorization'] =
@@ -9,7 +13,10 @@ class WhisperService {
 
   Future<String> transcribe(File audioFile) async {
     final formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(audioFile.path, filename: 'audio.m4a'),
+      'file': await MultipartFile.fromFile(
+        audioFile.path,
+        filename: 'audio.m4a',
+      ),
       'model': 'whisper-1',
     });
 
