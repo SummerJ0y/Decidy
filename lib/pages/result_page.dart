@@ -14,14 +14,14 @@ class ResultPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('你刚刚说的是：', style: TextStyle(fontSize: 16)),
+            Text('You just asked：', style: TextStyle(fontSize: 16)),
             SizedBox(height: 8),
             Text(
               appState.spokenText,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 32),
-            Text('Decidy 说：', style: TextStyle(fontSize: 16)),
+            Text('Decidy suggests：', style: TextStyle(fontSize: 16)),
             SizedBox(height: 8),
             Text(appState.decisionResult, style: TextStyle(fontSize: 22)),
             Spacer(),
@@ -31,7 +31,7 @@ class ResultPage extends StatelessWidget {
                   appState.clear();
                   Navigator.pop(context);
                 },
-                child: Text('再来一个'),
+                child: Text('Decide another one'),
               ),
             ),
           ],
